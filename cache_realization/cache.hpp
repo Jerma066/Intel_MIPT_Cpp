@@ -7,7 +7,6 @@
 template <typename Data, typename Id = int>
 class LFUCache {
 public:
-	explicit LFUCache() = default;
 	explicit LFUCache(size_t size): 
 		sz_(size)
 	{
@@ -73,9 +72,6 @@ private:
 			std::make_pair(element->first + 1, element->second)
 		);
 	}
-	
-public:
-	size_t sz_;
 
 private:
 	using lfu_iter = typename std::multimap<size_t, Id>::iterator;
@@ -83,4 +79,6 @@ private:
 	std::multimap<size_t, Id> lfu_frequency;
     std::unordered_map<Id, lfu_iter> lfu_hash;
     std::unordered_map<Id, Data> cache_map;
+    
+    size_t sz_;
 }; 
