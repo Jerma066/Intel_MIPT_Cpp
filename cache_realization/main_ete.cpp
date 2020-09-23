@@ -16,7 +16,7 @@ struct page_t {
 int main() {
 	size_t m = 0, n = 0, hits = 0;
 	LFU<page_t> c(4);	
-	std::cin >> m >> n; 
+	std::cin >> n; 
 
 	for (size_t i = 0; i < n; ++i) {
 		page_t p;
