@@ -6,6 +6,8 @@
 #include <iostream>
 #include <stdexcept>
 
+using namespace Caches;
+
 struct page_t {
 	int id;
 	double data; 
@@ -13,9 +15,8 @@ struct page_t {
 
 int main() {
 	size_t m = 0, n = 0, hits = 0;
-	LFUCache<page_t> c;	
+	LFU<page_t> c(4);	
 	std::cin >> m >> n; 
-	c.sz_ = m;
 
 	for (size_t i = 0; i < n; ++i) {
 		page_t p;

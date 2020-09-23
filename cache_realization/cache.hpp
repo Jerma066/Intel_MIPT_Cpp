@@ -3,11 +3,12 @@
 #include <utility> 
 #include <list>
 
-
+namespace Caches{
+	
 template <typename Data, typename Id = int>
-class LFUCache {
+class LFU {
 public:
-	explicit LFUCache(size_t size): 
+	explicit LFU(size_t size): 
 		sz_(size)
 	{
 	}
@@ -47,10 +48,6 @@ public:
 		return sz_;
 	}
 	
-	void setSize(size_t size) {
-		sz_ = size;
-	}
-	
 private:
 	void InsertElementInfo(const Id& element) {
 		lfu_hash[element] = lfu_frequency.emplace_hint(
@@ -82,3 +79,6 @@ private:
     
     size_t sz_;
 }; 
+
+}
+

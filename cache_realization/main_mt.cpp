@@ -7,6 +7,8 @@
 #include <iostream>
 #include <stdexcept>
 
+using namespace Caches;
+
 struct page_t {
 	int id;
 	double data; 
@@ -14,7 +16,7 @@ struct page_t {
 
 void TestSizeCheck() {
 	size_t n = 5;
-	LFUCache<page_t> cache(n);
+	LFU<page_t> cache(n);
 	for(size_t i = 0; i < 1000; i++) {
 		page_t p;
 		p.id = i;
@@ -24,7 +26,7 @@ void TestSizeCheck() {
 }
 
 void TestAbsoluteMiss(){
-	LFUCache<page_t> cache(5);
+	LFU<page_t> cache(5);
 	
 	for(size_t i = 0; i < 1000; i++) {
 		page_t p;
@@ -34,7 +36,7 @@ void TestAbsoluteMiss(){
 }
 
 void TestHit() {
-	LFUCache<page_t> cache(4);
+	LFU<page_t> cache(4);
 	page_t p;
 	p.id = 0;
 	bool hit = cache.lookup(p);
@@ -59,7 +61,7 @@ void TestHit() {
 }
 
 void TestRemovingMostRare(){
-	LFUCache<page_t> cache(5);
+	LFU<page_t> cache(5);
 	page_t p;
 	
 	for(size_t i = 0; i < 4; i++) {
