@@ -6,8 +6,6 @@
 #include <iostream>
 #include <stdexcept>
 
-using namespace Caches;
-
 struct page_t {
 	int id;
 	double data; 
@@ -15,13 +13,14 @@ struct page_t {
 
 int main() {
 	size_t m = 0, n = 0, hits = 0;
-	LFU<page_t> c(4);	
+	std::cin >> m;
+	Caches::LFU<page_t> c(m);	
 	std::cin >> n; 
 
 	for (size_t i = 0; i < n; ++i) {
 		page_t p;
 		std::cin >> p.id; 
-		if (c.lookup(p)) hits += 1;
+		if (c.lookup(p.id)) hits += 1;
 	}
 
 	std::cout << hits << "\n";

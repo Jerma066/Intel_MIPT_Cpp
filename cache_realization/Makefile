@@ -2,9 +2,9 @@ CC=g++
 CFLAGS= -std=c++1z -Wall
 
 all: 
-	$(CC) $(CFLAGS) -o main.o main_ete.cpp
+	$(CC) $(CFLAGS) -o main main_ete.cpp
 	
 test:
-	$(CC) $(CFLAGS) -o test.o main_mt.cpp
+	$(CC) $(CFLAGS) -o test main_mt.cpp
 	./test.o
 	

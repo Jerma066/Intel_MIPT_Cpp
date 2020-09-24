@@ -22,9 +22,8 @@ public:
 		return lfu_frequency.begin()->second;
 	}
 	
-	bool lookup(const Data& page) {
-		int key = page.id;
-		auto elem_it = cache_map.find(key);
+	bool lookup(const Id& id) {
+		auto elem_it = cache_map.find(id);
 
 		if (elem_it == cache_map.end()) {
 			if (isFull()) {
@@ -33,13 +32,13 @@ public:
 				cache_map.erase(victim);
 			}
 
-			InsertElementInfo(key);
-			cache_map.emplace(std::make_pair(key, page));
+			InsertElementInfo(id);
+			auto page = GetPageFromId(id);
+			cache_map.emplace(std::make_pair(id, page));
 			return false;
 		} 
 		else {
-			UpdateElement(key);
-			cache_map[key] = page;
+			UpdateElement(id);
 			return true;
 		}
 	}
@@ -68,6 +67,13 @@ private:
 			lfu_frequency.end(), 
 			std::make_pair(element->first + 1, element->second)
 		);
+	}
+	
+	Data GetPageFromId(const Id& id) const {
+		//TODO: Сделать нормальную реализацию этой 
+		//функции, если понадобиться
+		Data result;
+		return result;
 	}
 
 private:
