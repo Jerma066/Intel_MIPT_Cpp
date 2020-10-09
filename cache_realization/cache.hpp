@@ -154,8 +154,12 @@ private:
 			);
 			if(isFull()) {
 				if(next_entry != input_data.end()) {
-					EraseMostRemoteElement();
-					InsertElement(id, next_entry - input_data.begin());
+					auto distance = next_entry - input_data.begin();
+					auto mostRemote = belady_remoteness.rbegin()->first;
+					if(distance < mostRemote) {
+						EraseMostRemoteElement();
+						InsertElement(id, distance);
+					}
 				}
 				return false;
 			}

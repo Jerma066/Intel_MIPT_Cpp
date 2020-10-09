@@ -90,11 +90,11 @@ void TestBeladyScore() {
 			bscore.AddToStatistics(i);
 		}
 		
-		ASSERT_EQUAL(4, bscore.GetHitCount());
+		ASSERT_EQUAL(static_cast<size_t>(4), bscore.GetHitCount());
 		
 		bscore.AddToStatistics(5);
 		
-		ASSERT_EQUAL(4, bscore.GetHitCount());
+		ASSERT_EQUAL(static_cast<size_t>(4), bscore.GetHitCount());
 	}
 	
 	{
@@ -108,7 +108,7 @@ void TestBeladyScore() {
 		bscore.AddToStatistics(5);
 		bscore.AddToStatistics(2);
 		
-		ASSERT_EQUAL(1, bscore.GetHitCount());
+		ASSERT_EQUAL(static_cast<size_t>(1), bscore.GetHitCount());
 	}
 }
 
