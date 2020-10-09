@@ -80,6 +80,38 @@ void TestRemovingMostRare(){
 	ASSERT_EQUAL(false, cache.lookup(p.id));
 }
 
+void TestBeladyScore() {
+	{
+		Caches::BeladyScore bscore(4);
+		for(int i = 1; i < 6; i++) {
+			bscore.AddToStatistics(i);
+		}
+		for(int i = 1; i < 5; i++) {
+			bscore.AddToStatistics(i);
+		}
+		
+		ASSERT_EQUAL(4, bscore.GetHitCount());
+		
+		bscore.AddToStatistics(5);
+		
+		ASSERT_EQUAL(4, bscore.GetHitCount());
+	}
+	
+	{
+		Caches::BeladyScore bscore(3);
+		bscore.AddToStatistics(5);
+		bscore.AddToStatistics(3);
+		bscore.AddToStatistics(1);
+		bscore.AddToStatistics(7);
+		bscore.AddToStatistics(8);
+		bscore.AddToStatistics(6);
+		bscore.AddToStatistics(5);
+		bscore.AddToStatistics(2);
+		
+		ASSERT_EQUAL(1, bscore.GetHitCount());
+	}
+}
+
 int main() {
 	TestRunner tr;
 	
@@ -87,6 +119,7 @@ int main() {
 	RUN_TEST(tr, TestAbsoluteMiss);
 	RUN_TEST(tr, TestHit);
 	RUN_TEST(tr, TestRemovingMostRare);
+	RUN_TEST(tr, TestBeladyScore);
 
 	return 0; 
 }

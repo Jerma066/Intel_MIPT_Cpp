@@ -2,6 +2,11 @@
 #include <map>
 #include <utility> 
 #include <list>
+#include <algorithm>
+#include <vector>
+#include <unordered_set>
+#include <map>
+#include <iostream>
 
 namespace Caches{
 	
@@ -85,6 +90,95 @@ private:
     
     size_t sz_;
 }; 
+
+template <typename Id = int>
+class BeladyScore {
+public:
+	explicit BeladyScore(size_t size): 
+		sz_(size),
+		currentStateWasChanged(false),
+		hc_(0)
+	{
+	}
+
+public:
+	void AddToStatistics(Id id) {
+		input_data.push_back(id);
+		currentStateWasChanged = true;
+	}
+	
+	size_t GetHitCount() {
+		if(!currentStateWasChanged)
+			return hc_;
+		
+		hc_ = 0;
+		cache.clear();
+		belady_remoteness.clear();
+		for(size_t i = 0; i < input_data.size(); i++) {
+			if (lookup(input_data[i], i)) 
+				hc_ += 1;
+		}
+		
+		return hc_;
+	}
+	
+private:
+	bool isFull() {
+		return (cache.size() == sz_);
+	}
+	
+	void EraseMostRemoteElement() {
+		auto iter = belady_remoteness.end();
+		iter--;
+		belady_remoteness.erase(iter);
+		cache.erase(iter->second);
+	}
+	
+	void InsertElement(const Id& id, int distance){		
+		auto [cache_id_iter, flg] = cache.insert(id);
+		if(flg) {
+			belady_remoteness[distance] = cache_id_iter;
+		}
+		else {
+			std::cout << "We have problems!\nPlease report to me on my mail: ragimov.ib@phystech.edu!";
+		}
+	}
+
+	bool lookup(const Id& id, int current_state) {
+		auto elem_it = cache.find(id);
+		
+		if (elem_it == cache.end()) {
+			auto next_entry = find(
+				input_data.begin() + current_state + 1,
+				input_data.end(), id
+			);
+			if(isFull()) {
+				if(next_entry != input_data.end()) {
+					EraseMostRemoteElement();
+					InsertElement(id, next_entry - input_data.begin());
+				}
+				return false;
+			}
+			else {
+				InsertElement(id, next_entry - input_data.begin());
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+private:
+	size_t sz_;
+	bool currentStateWasChanged;
+	size_t hc_;
+	std::vector<Id> input_data;
+	
+
+	using id_iter = typename std::unordered_set<Id>::iterator;
+	std::map<int, id_iter> belady_remoteness;
+	std::unordered_set<Id> cache;
+};
 
 }
 

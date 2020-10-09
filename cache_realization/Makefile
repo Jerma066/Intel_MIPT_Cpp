@@ -7,4 +7,3 @@ all:
 test:
 	$(CC) $(CFLAGS) -o test main_mt.cpp
 	./test
-	
