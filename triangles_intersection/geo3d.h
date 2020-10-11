@@ -18,6 +18,12 @@ struct d3Value {
 
 struct Point {
 	float x, y, z;
+	
+	Point(float xx = 0, float yy = 0, float zz = 0) :
+		x(xx), y(yy), z(zz) 
+	{
+	}
+	
 };
 
 struct Vector {
@@ -40,6 +46,8 @@ struct Vector {
 	{
 	}
 };
+
+std::ostream& operator << (std::ostream &out, const Point& pt);
 
 namespace Axis{
 	const auto X = geo3d::Vector(1, 0, 0);
@@ -71,9 +79,15 @@ public:
 	
 public:
 	static Line IntersectionLine(Plane pl1, Plane pl2);
-	float GetCoefficientD() const;
-	float GetValueFromPoint(Point p) const;
-	Vector getNormal() const;
+	float GetCoefficientD() const { 
+		return D_; 
+	}
+	float GetValueFromPoint(Point p) const {
+		return ( D_ + ScalarProduct(normal, Vector(p)) );
+	}
+	Vector getNormal() const { 
+		return normal;
+	}
 	
 private:
 	Vector normal;
@@ -86,20 +100,20 @@ public:
 	
 public:
 	std::tuple<Point, Point, Point> GetPoints() const;
-	bool isItersect(Triangle tr);
-	
-private:
-	static float CalculateGapValue(float p0, float p1, float d0, float d1);
+	bool isIntersect(Triangle tr);
 	std::tuple<float, float> FindIntersectionGap(
 		Line iLine, int iPos, d3Value dval
 	) const;
+	
+private:
+	static float CalculateGapValue(float p0, float p1, float d0, float d1);
 
 private:
 	Point p1_, p2_, p3_;
 };
 
 
-std::tuple<int, d3Value> CheckItersection(Triangle tr, Plane pl);
+std::tuple<int, d3Value> CheckIntersection(Triangle tr, Plane pl);
 
 }
 

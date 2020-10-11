@@ -1,6 +1,19 @@
 #include "geo3d.h"
 
+void debug(int line) {
+	std::cout << "line number: " << line << std::endl;
+}
+
+
 namespace geo3d{
+	
+std::ostream& operator << (std::ostream &out, const Point& pt)
+{
+    out << "Point {" << pt.x << ", " << pt.y 
+		<< ", " << pt.z << "}";
+ 
+    return out;
+}
 
 // Vector module
 Vector operator * (Vector lhs, Vector rhs) {
@@ -8,6 +21,7 @@ Vector operator * (Vector lhs, Vector rhs) {
 	result.x = (lhs.y * rhs.z) - (rhs.y * lhs.z);
 	result.y = (rhs.x * lhs.z) - (lhs.x * rhs.z);
 	result.z = (lhs.x * rhs.y) - (rhs.x * lhs.y);
+	
 	return result;
 }
 
@@ -77,8 +91,8 @@ Line Plane::IntersectionLine(Plane pl1, Plane pl2) {
 	else if(ScalarProduct(result.direction, Axis::Y) != 0) {
 		result.startingPt.y = 0;
 		std::tie (result.startingPt.x, result.startingPt.z) = Kramer2dOnly (
-			std::make_tuple(pl1.normal.y, pl1.normal.z, -pl1.GetCoefficientD()),  
-			std::make_tuple(pl2.normal.y, pl2.normal.z, -pl2.GetCoefficientD())
+			std::make_tuple(pl1.normal.x, pl1.normal.z, -pl1.GetCoefficientD()),  
+			std::make_tuple(pl2.normal.x, pl2.normal.z, -pl2.GetCoefficientD())
 		); 
 	}
 	else if(ScalarProduct(result.direction, Axis::X) != 0) {
@@ -90,18 +104,6 @@ Line Plane::IntersectionLine(Plane pl1, Plane pl2) {
 	}		
 		
 	return result;
-}
-
-float Plane::GetCoefficientD() const {
-	return D_;
-}
-
-float Plane::GetValueFromPoint(Point p) const {
-	return ( D_ + ScalarProduct(normal, Vector(p)) );
-}
-
-Vector Plane::getNormal() const {
-	return normal;
 }
 	
 // Triangle module
@@ -117,8 +119,8 @@ std::tuple<Point, Point, Point> Triangle::GetPoints() const {
 }
 
 // Returned value: int - index of the intersecting vertex (-1) - if it does not intersect;
-// 															5 - if the planes coincide).
-std::tuple<int, d3Value> CheckItersection(Triangle tr, Plane pl) {
+// 															5  - if planes coincide).
+std::tuple<int, d3Value> CheckIntersection(Triangle tr, Plane pl) {
 	auto [p1, p2, p3] = tr.GetPoints();
 	auto dres = d3Value(
 		pl.GetValueFromPoint(std::move(p1)), 
@@ -136,16 +138,19 @@ std::tuple<int, d3Value> CheckItersection(Triangle tr, Plane pl) {
 			((dres.d2 > 0) ? 1 : 0)
 		);
 		
+		//std::cout << "Dres: " << dres.d0 << ", " << dres.d1 << ", " << dres.d2 << std::endl;
+		//std::cout << "Signs: " << signs << std::endl;
+		
 		switch (signs) {
 			case 1:
-				if(dres.d0) {return std::make_tuple(0, dres);}
-				else if(dres.d1) {return std::make_tuple(1, dres);}
-				else if(dres.d2) {return std::make_tuple(2, dres);}
+				if(dres.d0 > 0) {return std::make_tuple(0, dres);}
+				else if(dres.d1 > 0) {return std::make_tuple(1, dres);}
+				else if(dres.d2 > 0) {return std::make_tuple(2, dres);}
 				break;	
 			case 2:
-				if(!dres.d0){return std::make_tuple(0, dres);}
-				else if(!dres.d1){return std::make_tuple(1, dres);}
-				else if(!dres.d2){return std::make_tuple(2, dres);}
+				if(dres.d0 <= 0){return std::make_tuple(0, dres);}
+				else if(dres.d1 <= 0){return std::make_tuple(1, dres);}
+				else if(dres.d2  <= 0){return std::make_tuple(2, dres);}
 				break;
 			default:
 				return std::make_tuple(-1, dres);
@@ -157,7 +162,7 @@ std::tuple<int, d3Value> CheckItersection(Triangle tr, Plane pl) {
 }
 
 float Triangle::CalculateGapValue(float p0, float p1, float d0, float d1) {
-	return ( p0 + (p1 - p0)*(d0 / (d0 - d1)) );
+	return ( p1 + ((p0 - p1)*d1/(d1 - d0)) ) ;
 }
 
 std::tuple<float, float> Triangle::FindIntersectionGap (
@@ -166,6 +171,9 @@ std::tuple<float, float> Triangle::FindIntersectionGap (
 	float p_0 = ScalarProduct(iLine.direction,  Vector(iLine.startingPt, p1_));        	
 	float p_1 = ScalarProduct(iLine.direction,  Vector(iLine.startingPt, p2_));
 	float p_2 = ScalarProduct(iLine.direction,  Vector(iLine.startingPt, p3_));
+	
+	//std::cout << "p_i = { " <<  p_0 << ", " << p_1 << ", " << p_2 << "}" << std::endl;
+	//std::cout << "d_i = { " <<  dval.d0 << ", " << dval.d1 << ", " << dval.d2 << "}" << std::endl; 
 	
 	switch(iPos) {
 		case 0:
@@ -185,7 +193,7 @@ std::tuple<float, float> Triangle::FindIntersectionGap (
 		case 2:
 		{
 			float t1 = CalculateGapValue(p_2, p_0, dval.d2, dval.d0);
-			float t2 = CalculateGapValue(p_2, p_1, dval.d2, dval.d0);
+			float t2 = CalculateGapValue(p_2, p_1, dval.d2, dval.d1);
 			return std::make_tuple(std::min(t1, t2), std::max(t1, t2));
 			break;
 		}
@@ -197,7 +205,7 @@ std::tuple<float, float> Triangle::FindIntersectionGap (
 	return std::make_tuple(0, 0);
 }
 
-bool Triangle::isItersect(Triangle tr) {
+bool Triangle::isIntersect(Triangle tr) {
 	bool result = false;
 	auto [anotherP1, anotherP2, anotherP3] = tr.GetPoints();
 	
@@ -205,10 +213,13 @@ bool Triangle::isItersect(Triangle tr) {
 	Plane anotherPlane = Plane(anotherP1, anotherP2, anotherP3);
 	Plane thisPlane = Plane(this->p1_, this->p2_, this->p3_);
 	
+	//std::cout << thisPlane.normal << " D: " << thisPlane.D_ << std::endl;
+	//std::cout << anotherPlane.normal << " D: " << anotherPlane.D_ << std::endl;
+	
 	// Possibility of intersecting
-	auto [thisPosition, thisIntnValue] = CheckItersection(*this, anotherPlane);
+	auto [thisPosition, thisIntnValue] = CheckIntersection(*this, anotherPlane);
 	if(thisPosition == -1) {return false;}
-	auto [anotherPosition, anotherIntnValue] = CheckItersection(tr, thisPlane);
+	auto [anotherPosition, anotherIntnValue] = CheckIntersection(tr, thisPlane);
 	if(anotherPosition == -1) {return false;}
 	
 	// Not coplanar triangles:
@@ -216,8 +227,17 @@ bool Triangle::isItersect(Triangle tr) {
 	    ((anotherPosition < 5)  && (anotherPosition >= 0)) )  
 	{
 		Line inLn = Plane::IntersectionLine(anotherPlane, thisPlane);
-		auto [tt1, tt2] = FindIntersectionGap(inLn, thisPosition, thisIntnValue);
-		auto [at1, at2] = FindIntersectionGap(inLn, anotherPosition, anotherIntnValue);
+		
+		//std::cout << "Direction: " << inLn.direction << "; Starting point: " << inLn.startingPt << std::endl;
+		
+		//std::cout << "Position of 1: " << thisPosition << std::endl;
+		//std::cout << "Position of 2: " << anotherPosition << std::endl;
+	
+		auto [tt1, tt2] = this->FindIntersectionGap(inLn, thisPosition, thisIntnValue);
+		auto [at1, at2] = tr.FindIntersectionGap(inLn, anotherPosition, anotherIntnValue);
+		
+		//std::cout << "intersection gap : {" << tt1  << ", "  << tt2  << "}" << std::endl;
+		//std::cout << "intersection gap : {" << at1  << ", "  << at2  << "}" << std::endl;
 		
 		if( (tt1 > at2 && tt2 > at2) ||  (at1 > tt2 && at2 > tt2) ) {
 			result = false;
