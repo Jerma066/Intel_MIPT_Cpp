@@ -1,14 +1,14 @@
 #include "geo3d.h"
 
 #include <vector>
-#include <unordered_set>
+#include <set>
 #include <iostream>
 
 int main() {
 	int n;
 	std::cin >> n;
 	std::vector<geo3d::Triangle> trianglesVector;
-	std::unordered_set<int> result;
+	std::set<int> result;
 	
 	for(int i = 0; i < n; i++) {
 		geo3d::Point p1;
@@ -46,7 +46,7 @@ int main() {
 	}
 	
 	for(auto it = result.begin(); it != result.end(); it++) {
-		std::cout << *it;
+		std::cout << *it << " ";
 	} 
 	std::cout << std::endl;
 	
