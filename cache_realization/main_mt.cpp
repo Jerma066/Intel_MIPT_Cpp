@@ -13,9 +13,13 @@ struct page_t {
 	double data; 
 };
 
+double pageGetter(int id) {
+	return double(id);
+}
+
 void TestSizeCheck() {
 	size_t n = 5;
-	Caches::LFU<page_t> cache(n);
+	Caches::LFU<double> cache(n, pageGetter);
 	for(size_t i = 0; i < 1000; i++) {
 		page_t p;
 		p.id = i;
@@ -25,7 +29,7 @@ void TestSizeCheck() {
 }
 
 void TestAbsoluteMiss(){
-	Caches::LFU<page_t> cache(5);
+	Caches::LFU<double> cache(5, pageGetter);
 	
 	for(size_t i = 0; i < 1000; i++) {
 		page_t p;
@@ -35,7 +39,7 @@ void TestAbsoluteMiss(){
 }
 
 void TestHit() {
-	Caches::LFU<page_t> cache(4);
+	Caches::LFU<double> cache(4, pageGetter);
 	page_t p;
 	p.id = 0;
 	bool hit = cache.lookup(p.id);
@@ -60,7 +64,7 @@ void TestHit() {
 }
 
 void TestRemovingMostRare(){
-	Caches::LFU<page_t> cache(5);
+	Caches::LFU<double> cache(5, pageGetter);
 	page_t p;
 	
 	for(size_t i = 0; i < 4; i++) {

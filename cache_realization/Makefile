@@ -1,9 +1,9 @@
-CC=g++
-CFLAGS= -std=c++1z -Wall
+CXX=g++
+TEST_FLAGS= -std=c++1z
 
 all: 
-	$(CC) $(CFLAGS) -o main main_ete.cpp
+	$(CXX) $(CXXFLAGS) -o main main_ete.cpp
 	
 test:
-	$(CC) $(CFLAGS) -o test main_mt.cpp
+	$(CXX) $(TEST_FLAGS) -o test main_mt.cpp
 	./test

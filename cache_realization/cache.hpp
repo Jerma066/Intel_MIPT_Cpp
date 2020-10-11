@@ -7,14 +7,16 @@
 #include <unordered_set>
 #include <map>
 #include <iostream>
+#include <functional>
 
 namespace Caches{
 	
 template <typename Data, typename Id = int>
 class LFU {
 public:
-	explicit LFU(size_t size): 
-		sz_(size)
+	explicit LFU(size_t size, std::function<Data(Id id)> pageGetter): 
+		sz_(size),
+		getPageFromId(pageGetter)
 	{
 	}
 	
@@ -38,7 +40,7 @@ public:
 			}
 
 			InsertElementInfo(id);
-			auto page = GetPageFromId(id);
+			auto page = getPageFromId(id);
 			cache_map.emplace(std::make_pair(id, page));
 			return false;
 		} 
@@ -73,13 +75,6 @@ private:
 			std::make_pair(element->first + 1, element->second)
 		);
 	}
-	
-	Data GetPageFromId(const Id& id) const {
-		//TODO: Сделать нормальную реализацию этой 
-		//функции, если понадобиться
-		Data result;
-		return result;
-	}
 
 private:
 	using lfu_iter = typename std::multimap<size_t, Id>::iterator;
@@ -89,6 +84,7 @@ private:
     std::unordered_map<Id, Data> cache_map;
     
     size_t sz_;
+    std::function<Data(Id id)> getPageFromId;
 }; 
 
 template <typename Id = int>
@@ -117,19 +113,29 @@ public:
 		for(size_t i = 0; i < input_data.size(); i++) {
 			if (lookup(input_data[i], i)) 
 				hc_ += 1;
+			UpdateCacheElements(i);
 		}
 		
 		return hc_;
 	}
 	
 private:
-	bool isFull() {
+	bool isFull() const {
 		return (cache.size() == sz_);
 	}
 	
+	void UpdateCacheElements(int pos) {
+		std::map<int, id_iter> new_belady_remoteness;
+		id_iter iter;
+		for(auto it = cache.begin(); it != cache.end(); it++) {
+			auto nextItemEntry = *find(input_data.begin() + pos, input_data.end(), *it);
+			new_belady_remoteness[nextItemEntry] = it;
+		}
+		belady_remoteness = new_belady_remoteness;
+	}
+	
 	void EraseMostRemoteElement() {
-		auto iter = belady_remoteness.end();
-		iter--;
+		auto iter = --belady_remoteness.end();
 		belady_remoteness.erase(iter);
 		cache.erase(iter->second);
 	}

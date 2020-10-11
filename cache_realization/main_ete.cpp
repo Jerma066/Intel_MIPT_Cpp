@@ -11,10 +11,14 @@ struct page_t {
 	double data; 
 };
 
+double pageGetter(int id) {
+	return double(id);
+}
+
 int main() {
 	size_t m = 0, n = 0, hits = 0;
 	std::cin >> m;
-	Caches::LFU<page_t> c(m);
+	Caches::LFU<double> c(m, pageGetter);
 	Caches::BeladyScore bscore(m);	
 	std::cin >> n; 
 
@@ -28,7 +32,7 @@ int main() {
 	auto bhits = bscore.GetHitCount();
 	
 	if(bhits > hits) {
-		std::cout << "Beladi gives an advantage in " << bhits - hits << "hits:" << std::endl;
+		std::cout << "Beladi gives an advantage in " << bhits - hits << " hits:" << std::endl;
 	}
 	else if (bhits == hits) {
 		std::cout << "In this case, the approaches give an equivalent result" << std::endl;
@@ -39,9 +43,7 @@ int main() {
 	
 	std::cout << "LFU Cache result is " << hits << std::endl;
 	std::cout << "Belady Cache result is " << bhits << std::endl;
-	
-	
-	
+		
 	
 	return 0;
 }
