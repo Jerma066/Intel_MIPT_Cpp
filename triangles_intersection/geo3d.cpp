@@ -138,9 +138,6 @@ std::tuple<int, d3Value> CheckIntersection(Triangle tr, Plane pl) {
 			((dres.d2 > 0) ? 1 : 0)
 		);
 		
-		//std::cout << "Dres: " << dres.d0 << ", " << dres.d1 << ", " << dres.d2 << std::endl;
-		//std::cout << "Signs: " << signs << std::endl;
-		
 		switch (signs) {
 			case 1:
 				if(dres.d0 > 0) {return std::make_tuple(0, dres);}
@@ -213,31 +210,22 @@ bool Triangle::isIntersect(Triangle tr) {
 	Plane anotherPlane = Plane(anotherP1, anotherP2, anotherP3);
 	Plane thisPlane = Plane(this->p1_, this->p2_, this->p3_);
 	
-	//std::cout << thisPlane.normal << " D: " << thisPlane.D_ << std::endl;
-	//std::cout << anotherPlane.normal << " D: " << anotherPlane.D_ << std::endl;
-	
 	// Possibility of intersecting
 	auto [thisPosition, thisIntnValue] = CheckIntersection(*this, anotherPlane);
 	if(thisPosition == -1) {return false;}
 	auto [anotherPosition, anotherIntnValue] = CheckIntersection(tr, thisPlane);
 	if(anotherPosition == -1) {return false;}
 	
+	//debug(__LINE__);
+	
 	// Not coplanar triangles:
 	if( ((thisPosition < 5) && (thisPosition >= 0)) && 
 	    ((anotherPosition < 5)  && (anotherPosition >= 0)) )  
 	{
 		Line inLn = Plane::IntersectionLine(anotherPlane, thisPlane);
-		
-		//std::cout << "Direction: " << inLn.direction << "; Starting point: " << inLn.startingPt << std::endl;
-		
-		//std::cout << "Position of 1: " << thisPosition << std::endl;
-		//std::cout << "Position of 2: " << anotherPosition << std::endl;
 	
 		auto [tt1, tt2] = this->FindIntersectionGap(inLn, thisPosition, thisIntnValue);
 		auto [at1, at2] = tr.FindIntersectionGap(inLn, anotherPosition, anotherIntnValue);
-		
-		//std::cout << "intersection gap : {" << tt1  << ", "  << tt2  << "}" << std::endl;
-		//std::cout << "intersection gap : {" << at1  << ", "  << at2  << "}" << std::endl;
 		
 		if( (tt1 > at2 && tt2 > at2) ||  (at1 > tt2 && at2 > tt2) ) {
 			result = false;
@@ -246,6 +234,8 @@ bool Triangle::isIntersect(Triangle tr) {
 			result = true;
 		}
 	}
+	
+	//debug(__LINE__);
 	
 	// Coplanar triangles:
 	if(thisPosition == 5 && anotherPosition == 5) {
@@ -256,32 +246,40 @@ bool Triangle::isIntersect(Triangle tr) {
 
 		geo2d::Triangle ttr, atr;
 		if(prlToX && prlToY) {
+			//debug(__LINE__);
 			ttr = Converters::From3dTo2d(*this, Converters::Mode::NO_Z);
 			atr = Converters::From3dTo2d(tr, Converters::Mode::NO_Z);
 		}
 		else if (prlToX && prlToZ) {
+			//debug(__LINE__);
 			ttr = Converters::From3dTo2d(*this, Converters::Mode::NO_Y);
 			atr = Converters::From3dTo2d(tr, Converters::Mode::NO_Y);
 		}
 		else if (prlToY && prlToZ) {
+			//debug(__LINE__);
 			ttr = Converters::From3dTo2d(*this, Converters::Mode::NO_X);
 			atr = Converters::From3dTo2d(tr, Converters::Mode::NO_X);
 		}
 		else if (prlToX) {
+			//debug(__LINE__);
 			ttr = Converters::From3dTo2d(*this, Converters::Mode::NO_Y);
 			atr = Converters::From3dTo2d(tr, Converters::Mode::NO_Y);
 		}
 		else if (prlToY) {
+			//debug(__LINE__);
 			ttr = Converters::From3dTo2d(*this, Converters::Mode::NO_Z);
 			atr = Converters::From3dTo2d(tr, Converters::Mode::NO_Z);
 		}
 		else if (prlToZ) {
+			//debug(__LINE__);
 			ttr = Converters::From3dTo2d(*this, Converters::Mode::NO_X);
 			atr = Converters::From3dTo2d(tr, Converters::Mode::NO_X);
 		}
 	
 		return ttr.isIntersect(atr);
 	}
+	
+	//debug(__LINE__);
 	
 	return result;
 }
@@ -297,13 +295,13 @@ float operator * (Vector lhs, Vector rhs) {
 // Segment module
 bool Segment::IsIntersect(Segment seg1, Segment seg2){
 	float res1 = Vector(seg1.p1, seg2.p1) * Vector(seg1.p1, seg1.p2);
-	float res2 = Vector(seg1.p1, seg2.p2) * Vector(seg1.p1, seg2.p2);
+	float res2 = Vector(seg1.p1, seg2.p2) * Vector(seg1.p1, seg1.p2);
 	
 	if((res1 * res2) > 0)
 		return false;
 	
-	res1 = Vector(seg2.p1, seg1.p1) * Vector(seg1.p1, seg2.p2);
-	res2 = Vector(seg2.p1, seg1.p1) * Vector(seg1.p1, seg2.p2);
+	res1 = Vector(seg2.p2, seg1.p2) * Vector(seg2.p2, seg2.p1);
+	res2 = Vector(seg2.p2, seg1.p1) * Vector(seg2.p2, seg2.p1);
 	
 	if((res1 * res2) > 0)
 		return false;
@@ -335,6 +333,7 @@ bool Triangle::isPointLiesIn(Point pt) const {
 			return false;
 		}
 		else {
+			//debug(__LINE__);
 			return true;
 		}
 	}
@@ -343,6 +342,7 @@ bool Triangle::isPointLiesIn(Point pt) const {
 			return false;
 		}
 		else {
+			//debug(__LINE__);
 			return true;
 		}
 	}
@@ -351,18 +351,21 @@ bool Triangle::isPointLiesIn(Point pt) const {
 			return false;
 		}
 		else {
+			//debug(__LINE__);
 			return true;
 		}
 	}
 	
 	// Lies inside the triangle
+	//std::cout << "signs: " << z1 << ", " << z2 << ", " << z3 << std::endl;
 	int signs = (
 		((z1 > 0) ? 1 : 0) + 
 		((z2 > 0) ? 1 : 0) + 
-		((z2 > 0)? 1 : 0)
+		((z3 > 0)? 1 : 0)
 	);
 	
 	if(signs == 0 || signs == 3) {
+		//debug(__LINE__);
 		return true;
 	}
 	
@@ -371,27 +374,44 @@ bool Triangle::isPointLiesIn(Point pt) const {
 
 bool Triangle::isIntersect(Triangle tr) const {
 	// Сhecking if any vertex of one triangle lies in another
-	if(tr.isPointLiesIn(p1_)){ return true; }
+	//debug(__LINE__);
+	if(tr.isPointLiesIn(p1_)){ 
+		//debug(__LINE__);
+		return true; 
+	}
+	//debug(__LINE__);
 	if(tr.isPointLiesIn(p2_)){ return true; }
+	//debug(__LINE__);
 	if(tr.isPointLiesIn(p3_)){ return true; }
 	
 	auto [ap1, ap2, ap3] = tr.GetPoints();
 	if(this->isPointLiesIn(ap1)){ return true; }
+	//debug(__LINE__);
 	if(this->isPointLiesIn(ap2)){ return true; }
+	//debug(__LINE__);
 	if(this->isPointLiesIn(ap3)){ return true; }
+	//debug(__LINE__);
 	
 	// Edge intersection check
 	if(Segment::IsIntersect(Segment(p1_, p2_), Segment(ap1, ap2))) { return true; }
+	//debug(__LINE__);
 	if(Segment::IsIntersect(Segment(p1_, p2_), Segment(ap1, ap3))) { return true; }
+	//debug(__LINE__);
 	if(Segment::IsIntersect(Segment(p1_, p2_), Segment(ap2, ap3))) { return true; }
 	
 	if(Segment::IsIntersect(Segment(p1_, p3_), Segment(ap1, ap2))) { return true; }
+	//debug(__LINE__);
 	if(Segment::IsIntersect(Segment(p1_, p3_), Segment(ap1, ap3))) { return true; }
+	//debug(__LINE__);
 	if(Segment::IsIntersect(Segment(p1_, p3_), Segment(ap2, ap3))) { return true; }
+	//debug(__LINE__);
 	
 	if(Segment::IsIntersect(Segment(p2_, p3_), Segment(ap1, ap2))) { return true; }
+	//debug(__LINE__);
 	if(Segment::IsIntersect(Segment(p2_, p3_), Segment(ap1, ap3))) { return true; }
+	//debug(__LINE__);
 	if(Segment::IsIntersect(Segment(p2_, p3_), Segment(ap2, ap3))) { return true; }
+	//debug(__LINE__);
 	
 	return false;
 }
