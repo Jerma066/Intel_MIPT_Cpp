@@ -132,6 +132,26 @@ void TesIntersectionLinetFinding() {
 
 void Test2DTrianglesIntersection() {
 	using namespace geo2d;
+	{
+		Triangle tr1(Point(-267.7, 267.7), Point(-227.215, 267.7), Point(-267.7, 361.065));
+		Triangle tr2(Point(366.365, 198.868), Point(406.85, 198.868), Point(366.365, 292.233));
+		ASSERT_EQUAL(tr1.isIntersect(tr2), false);
+		ASSERT_EQUAL(tr2.isIntersect(tr1), false);		
+	}
+	
+	{
+		Triangle tr1(Point(2, 5), Point(8, 12), Point(8, 5));
+		Triangle tr2(Point(3, 3), Point(3, 10), Point(9, 3));	
+		ASSERT_EQUAL(tr1.isIntersect(tr2), true);
+		ASSERT_EQUAL(tr2.isIntersect(tr1), true);
+	}	
+	
+	{
+		Triangle tr1(Point(-267.7, 267.7), Point(-227.215, 267.7), Point(-267.7, 361.065));
+		Triangle tr2(Point(0, 0), Point(40.4847, 0), Point(0, 93.3652));
+		ASSERT_EQUAL(tr1.isIntersect(tr2), false);
+		ASSERT_EQUAL(tr2.isIntersect(tr1), false);
+	}
 	
 	{
 		Triangle tr1(Point(0, 0), Point(1, 1), Point(1, 0));
@@ -201,14 +221,7 @@ void Test2DTrianglesIntersection() {
 		Triangle tr1(Point(9, 9), Point(9, -3), Point(-3, 9));
 		ASSERT_EQUAL(tr1.isIntersect(tr2), true);
 		ASSERT_EQUAL(tr2.isIntersect(tr1), true);
-	}
-	
-	{
-		Triangle tr1(Point(2, 5), Point(8, 12), Point(8, 5));
-		Triangle tr2(Point(3, 3), Point(3, 10), Point(9, 3));	
-		ASSERT_EQUAL(tr1.isIntersect(tr2), true);
-		ASSERT_EQUAL(tr2.isIntersect(tr1), true);
-	}		
+	}	
 	
 	{
 		Triangle tr1(Point(3, 3), Point(3, 10), Point(9, 3));
@@ -220,6 +233,19 @@ void Test2DTrianglesIntersection() {
 
 void Test3DTrianglesIntersection() {
 	using namespace geo3d;
+	{
+		Triangle tr1(Point(-267.7, 267.7, 0), Point(-227.215, 267.7, 0), Point(-267.7, 361.065, 0));
+		Triangle tr2(Point(366.365, 198.868, 0), Point(406.85, 198.868, 0), Point(366.365, 292.233, 0));
+		ASSERT_EQUAL(tr1.isIntersect(tr2), false);
+		ASSERT_EQUAL(tr2.isIntersect(tr1), false);		
+	}
+	
+	{
+		Triangle tr1(Point(-267.7, 267.7, 0), Point(-227.215, 267.7, 0), Point(-267.7, 361.065, 0));
+		Triangle tr2(Point(0, 0, 0), Point(40.4847, 0, 0), Point(0, 93.3652, 0));
+		ASSERT_EQUAL(tr1.isIntersect(tr2), false);
+		ASSERT_EQUAL(tr2.isIntersect(tr1), false);
+	}
 
 	{
 		Triangle tr1(Point(0, 0, 3), Point(1, 1, 3), Point(1, 0, 3));
