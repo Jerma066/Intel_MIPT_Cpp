@@ -71,7 +71,7 @@ std::tuple<float, float> Kramer2dOnly (
 	std::tuple<float, float, float> equation2
 );
 
-class Plane {
+struct Plane {
 public:
 	Plane(float A, float B, float C, float D);
 	Plane(Point p1, Point p2, Point p3);
@@ -94,7 +94,7 @@ private:
 	float D_;
 };
 	
-class Triangle	{
+struct Triangle	{
 public:
 	Triangle(Point p1, Point p2, Point p3);
 	
@@ -108,7 +108,7 @@ public:
 private:
 	static float CalculateGapValue(float p0, float p1, float d0, float d1);
 
-private:
+public:
 	Point p1_, p2_, p3_;
 };
 
@@ -157,7 +157,7 @@ struct Segment {
 	static bool IsIntersect(Segment seg1, Segment seg2);
 };
 
-class Triangle {
+struct Triangle {
 public:
 	Triangle(Point p1, Point p2, Point p3);
 	Triangle() = default;
@@ -167,7 +167,7 @@ public:
 	bool isPointLiesIn(Point pt) const;
 	bool isIntersect(Triangle tr) const;
 	
-private:
+public:
 	Point p1_, p2_, p3_;
 };
 
