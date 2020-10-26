@@ -233,6 +233,35 @@ void Test2DTrianglesIntersection() {
 
 void Test3DTrianglesIntersection() {
 	using namespace geo3d;
+	
+	{
+		Triangle tr1(Point(5, 0, 2), Point(0, 3, 2), Point(0, -3, 2));
+		Triangle tr2(Point(0, 0, 7), Point(0, 2.57, -2), Point(0, -2.57, -2));
+		ASSERT_EQUAL(tr1.isIntersect(tr2), true);
+		ASSERT_EQUAL(tr2.isIntersect(tr1), true);
+	}
+	
+	{
+		Triangle tr1(Point(5, 0, 2), Point(0, 3, 2), Point(0, -3, 2));
+		Triangle tr2(Point(4, 2, 0), Point(4, 6, 0), Point(4, 2, 8));
+		ASSERT_EQUAL(tr1.isIntersect(tr2), false);
+		ASSERT_EQUAL(tr2.isIntersect(tr1), false);
+	}
+	
+	{
+		Triangle tr1(Point(1, 1, 3), Point(1, 7, 3), Point(7, 4, 3));
+		Triangle tr2(Point(2, 4, 0), Point(5, 4, 0), Point(7, 4, 3));
+		ASSERT_EQUAL(tr1.isIntersect(tr2), true);
+		ASSERT_EQUAL(tr2.isIntersect(tr1), true);
+	}	
+	
+	{
+		Triangle tr1(Point(4, 6, 3), Point(4, 6, 0), Point(0, 5, 1));
+		Triangle tr2(Point(4, 2, 0), Point(4, 6, 0), Point(4, 2, 8));
+		ASSERT_EQUAL(tr1.isIntersect(tr2), true);
+		ASSERT_EQUAL(tr2.isIntersect(tr1), true);
+	}
+	
 	{
 		Triangle tr1(Point(-267.7, 267.7, 0), Point(-227.215, 267.7, 0), Point(-267.7, 361.065, 0));
 		Triangle tr2(Point(366.365, 198.868, 0), Point(406.85, 198.868, 0), Point(366.365, 292.233, 0));
@@ -257,13 +286,6 @@ void Test3DTrianglesIntersection() {
 	{
 		Triangle tr1(Point(1, 1, 3), Point(1, 7, 3), Point(7, 4, 3));
 		Triangle tr2(Point(2, 4, 0), Point(5, 4, 0), Point(3, 4, 6));
-		ASSERT_EQUAL(tr1.isIntersect(tr2), true);
-		ASSERT_EQUAL(tr2.isIntersect(tr1), true);
-	}	
-
-	{
-		Triangle tr1(Point(1, 1, 3), Point(1, 7, 3), Point(7, 4, 3));
-		Triangle tr2(Point(2, 4, 0), Point(5, 4, 0), Point(7, 4, 3));
 		ASSERT_EQUAL(tr1.isIntersect(tr2), true);
 		ASSERT_EQUAL(tr2.isIntersect(tr1), true);
 	}	
