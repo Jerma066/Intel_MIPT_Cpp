@@ -219,7 +219,7 @@ bool Triangle::isIntersect(Triangle tr) {
 	
 	// Plane equations:
 	Plane anotherPlane = Plane(anotherP1, anotherP2, anotherP3);
-	Plane thisPlane = Plane(this->p1_, this->p2_, this->p3_);
+	Plane thisPlane = Plane(p1_, p2_, p3_);
 	
 	
 	
@@ -240,7 +240,7 @@ bool Triangle::isIntersect(Triangle tr) {
 		//std::cout << inLn.direction << std::endl;
 		//std::cout << inLn.startingPt << std::endl;
 	
-		auto [tt1, tt2] = this->FindIntersectionGap(inLn, thisPosition, thisIntnValue);
+		auto [tt1, tt2] = FindIntersectionGap(inLn, thisPosition, thisIntnValue);
 		auto [at1, at2] = tr.FindIntersectionGap(inLn, anotherPosition, anotherIntnValue);
 		
 		if( (tt1 > at2 && tt2 > at2) ||  (at1 > tt2 && at2 > tt2) ) {
@@ -403,11 +403,11 @@ bool Triangle::isIntersect(Triangle tr) const {
 	if(tr.isPointLiesIn(p3_)){ return true; }
 	
 	auto [ap1, ap2, ap3] = tr.GetPoints();
-	if(this->isPointLiesIn(ap1)){ return true; }
+	if(isPointLiesIn(ap1)){ return true; }
 	//debug(__LINE__);
-	if(this->isPointLiesIn(ap2)){ return true; }
+	if(isPointLiesIn(ap2)){ return true; }
 	//debug(__LINE__);
-	if(this->isPointLiesIn(ap3)){ return true; }
+	if(isPointLiesIn(ap3)){ return true; }
 	//debug(__LINE__);
 	
 	// Edge intersection check
