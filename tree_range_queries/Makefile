@@ -1,9 +1,11 @@
 CXX=g++
 TEST_FLAGS= -std=c++1z
+SOURCES = tree.cpp main.cpp
+USOURCES = tree.cpp UnitTests/unit_tests.cpp
 
 all: 
-	$(CXX) $(CXXFLAGS) -o main main.cpp
+	$(CXX) $(CXXFLAGS) -o main $(SOURCES)
 	
-ete_test:
-	$(CXX) $(TEST_FLAGS) -o main main.cpp
-	./main
+test:
+	$(CXX) $(TEST_FLAGS) -o unit_tests $(USOURCES)
+	./unit_tests

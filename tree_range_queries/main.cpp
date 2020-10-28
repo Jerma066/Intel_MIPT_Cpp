@@ -1,4 +1,4 @@
-#include "tree.hpp"
+#include "tree.h"
 
 #include <iostream>
 #include <vector>
@@ -7,7 +7,7 @@
 int main() { 
 	size_t N;
 	std::cin >> N;
-	trees::Standart tree;
+	trees::AVL tree;
 	
 	for(size_t i = 0; i < N; i++) {
 		int key;
