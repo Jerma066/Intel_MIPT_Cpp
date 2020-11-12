@@ -72,7 +72,7 @@ void TestKramerMethod2dOnly() {
 }
 
 void TesIntersectionLinetFinding() {
-	using namespace geo3d;
+	using namespace geo3d;	
 	{
 		Plane fplane(2, 3, 0, 1);
 		Plane splane(1, -2, 1, -3);
@@ -233,7 +233,12 @@ void Test2DTrianglesIntersection() {
 
 void Test3DTrianglesIntersection() {
 	using namespace geo3d;
-	
+	{
+		Triangle tr1(Point(0, 0, 0), Point(1, 0, 0), Point(0, 1, 0));
+		Triangle tr2(Point(0, 0, 0.01), Point(5, 5, 0.01), Point(5, 5, -0.09));
+		ASSERT_EQUAL(tr1.isIntersect(tr2), true);
+		ASSERT_EQUAL(tr2.isIntersect(tr1), true);
+	}
 	{
 		Triangle tr1(Point(5, 0, 2), Point(0, 3, 2), Point(0, -3, 2));
 		Triangle tr2(Point(0, 0, 7), Point(0, 2.57, -2), Point(0, -2.57, -2));

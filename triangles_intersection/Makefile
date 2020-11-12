@@ -14,3 +14,4 @@ optimized:
 test:
 	$(CXX) $(TESTFLAGS) -o unit_tests $(TEST_SOURCES)
 	./unit_tests
+	rm unit_tests

@@ -131,29 +131,29 @@ std::tuple<int, d3Value> CheckIntersection(Triangle tr, Plane pl) {
 	if((dres.d0 == 0) && (dres.d1 == 0) && (dres.d2 == 0)){
 		return std::make_tuple(5, dres);
 	}
-	else{
-		int signs;
-		
+	else{		
 		if(dres.d0 * dres.d1 * dres.d2 == 0){
-			signs = 1;
+			if(dres.d0 != 0) {return std::make_tuple(0, dres);}
+			else if(dres.d1 != 0) {return std::make_tuple(1, dres);}
+			else if(dres.d2 != 0) {return std::make_tuple(2, dres);}
 		}
-		else {
-			signs = (((dres.d0 > 0) ? 1 : 0) +
-				((dres.d1 > 0) ? 1 : 0) + 
-				((dres.d2 > 0) ? 1 : 0)
-			);
-		}
+		
+		int signs = (
+			((dres.d0 > 0) ? 1 : 0) +
+			((dres.d1 > 0) ? 1 : 0) + 
+			((dres.d2 > 0) ? 1 : 0)
+		);
 		
 		switch (signs) {
 			case 1:
-				if(dres.d0 >= 0) {return std::make_tuple(0, dres);}
-				else if(dres.d1 >= 0) {return std::make_tuple(1, dres);}
-				else if(dres.d2 >= 0) {return std::make_tuple(2, dres);}
+				if(dres.d0 > 0) {return std::make_tuple(0, dres);}
+				else if(dres.d1 > 0) {return std::make_tuple(1, dres);}
+				else if(dres.d2 > 0) {return std::make_tuple(2, dres);}
 				break;	
 			case 2:
-				if(dres.d0 <= 0){return std::make_tuple(0, dres);}
-				else if(dres.d1 <= 0){return std::make_tuple(1, dres);}
-				else if(dres.d2  <= 0){return std::make_tuple(2, dres);}
+				if(dres.d0 < 0){return std::make_tuple(0, dres);}
+				else if(dres.d1 < 0){return std::make_tuple(1, dres);}
+				else if(dres.d2  < 0){return std::make_tuple(2, dres);}
 				break;
 			default:
 				return std::make_tuple(-1, dres);
@@ -168,7 +168,7 @@ float Triangle::CalculateGapValue(float p0, float p1, float d0, float d1) {
 	if(d1 == 0 || d1 == -0) {
 		return p1;
 	}
-	
+	//std::cout << p1 << " + (( " << p0 << " - " << p1 << " ) * " << d1 << " / (" << d1 << " - " << d0 << " )" << std::endl;   
 	return ( p1 + ((p0 - p1)*d1/(d1 - d0)) ) ;
 }
 
@@ -221,8 +221,6 @@ bool Triangle::isIntersect(Triangle tr) {
 	Plane anotherPlane = Plane(anotherP1, anotherP2, anotherP3);
 	Plane thisPlane = Plane(p1_, p2_, p3_);
 	
-	
-	
 	// Possibility of intersecting
 	auto [thisPosition, thisIntnValue] = CheckIntersection(*this, anotherPlane);
 	if(thisPosition == -1) {return false;}
@@ -236,16 +234,13 @@ bool Triangle::isIntersect(Triangle tr) {
 	    ((anotherPosition < 5)  && (anotherPosition >= 0)) )  
 	{
 		Line inLn = Plane::IntersectionLine(anotherPlane, thisPlane);
-	
 		//std::cout << inLn.direction << std::endl;
 		//std::cout << inLn.startingPt << std::endl;
-	
 		auto [tt1, tt2] = FindIntersectionGap(inLn, thisPosition, thisIntnValue);
 		auto [at1, at2] = tr.FindIntersectionGap(inLn, anotherPosition, anotherIntnValue);
-		
+		//std::cout << "(" << tt1 << "; " << tt2 << ")" << std::endl;
+		//std::cout << "(" << at1 << "; " << at2 << ")" << std::endl;
 		if( (tt1 > at2 && tt2 > at2) ||  (at1 > tt2 && at2 > tt2) ) {
-			//std::cout << "(" << tt1 << "; " << tt2 << ")" << std::endl;
-			//std::cout << "(" << at1 << "; " << at2 << ")" << std::endl;
 			return false;
 		}
 		else {
