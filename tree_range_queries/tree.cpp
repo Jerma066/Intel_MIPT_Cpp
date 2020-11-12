@@ -16,6 +16,7 @@ size_t Standart::getRangeQuerieCount(int first, int second) {
 
 // AVL tree
 void AVL::insertKey(int key) {	
+	//std::cout << key << std::endl;
 	Node* NewNode = new Node(key, nullptr);
 	if(!root_) {
 		root_ = NewNode;
@@ -236,11 +237,17 @@ void AVL::printFromNode(Node* curNode) {
 size_t AVL::getRangeQuerieCount(int first, int second) {
 	size_t surplus = 0; 
 	
+	if(first > second) {
+		auto tmp = second;
+		second = first;
+		first = tmp;
+	}
+	
 	Node* fi = find(first);
-	if(fi->value <= first) {surplus++;}
+	if(fi->value < first) {surplus++;}
 		
 	Node* si = find(second);
-	if(si->value >= second) {surplus++;}
+	if(si->value > second) {surplus++;}
 	
 	/*
 	std::cout << "surplus = " << surplus << std::endl;

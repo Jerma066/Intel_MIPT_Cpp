@@ -9,3 +9,4 @@ all:
 test:
 	$(CXX) $(TEST_FLAGS) -o unit_tests $(USOURCES)
 	./unit_tests
+	rm unit_tests

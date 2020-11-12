@@ -23,9 +23,10 @@ int main() {
 	for(size_t i = 0; i < M; i++) {
 		int lb; std::cin >> lb;
 		int ub; std::cin >> ub;
+		//std::cout << lb << "; " << ub << std::endl;
 		result.push_back(tree.getRangeQuerieCount(lb, ub));
 	}
-	
+
 	for(auto it = result.begin(); it != result.end(); it++) {
 		std::cout << *it << " ";
 	}
