@@ -17,14 +17,23 @@ void TestCorrectness() {
 	//tree.printFromNode(tree.find(10));
 	
 	ASSERT_EQUAL(tree.getRangeQuerieCount(29, 41), 2);
-	ASSERT_EQUAL(tree.getRangeQuerieCount(40, 50), 0);
-	ASSERT_EQUAL(tree.getRangeQuerieCount(40, 41), 0);
-	ASSERT_EQUAL(tree.getRangeQuerieCount(50, 51), 0);
-	ASSERT_EQUAL(tree.getRangeQuerieCount(10, 20), 0);
-	ASSERT_EQUAL(tree.getRangeQuerieCount(20, 30), 0);
+	ASSERT_EQUAL(tree.getRangeQuerieCount(40, 50), 2);
+	ASSERT_EQUAL(tree.getRangeQuerieCount(40, 41), 1);
+	ASSERT_EQUAL(tree.getRangeQuerieCount(50, 51), 1);
+	ASSERT_EQUAL(tree.getRangeQuerieCount(10, 20), 2);
+	ASSERT_EQUAL(tree.getRangeQuerieCount(20, 30), 2);
 	ASSERT_EQUAL(tree.getRangeQuerieCount(29, 31), 1);
 	ASSERT_EQUAL(tree.getRangeQuerieCount(49, 51), 1);
 	ASSERT_EQUAL(tree.getRangeQuerieCount(9, 11), 1);	
+	
+	ASSERT_EQUAL(tree.getRangeQuerieCount(10, 10), 1);
+	ASSERT_EQUAL(tree.getRangeQuerieCount(20, 20), 1);
+	ASSERT_EQUAL(tree.getRangeQuerieCount(30, 30), 1);
+	ASSERT_EQUAL(tree.getRangeQuerieCount(40, 40), 1);
+	
+	ASSERT_EQUAL(tree.getRangeQuerieCount(7, 7), 0);
+	ASSERT_EQUAL(tree.getRangeQuerieCount(31, 31), 0);
+	ASSERT_EQUAL(tree.getRangeQuerieCount(101, 101), 0);
 }
 
 void TestSpeedUp() {
