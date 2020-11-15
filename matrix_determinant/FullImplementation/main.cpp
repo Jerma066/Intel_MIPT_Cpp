@@ -8,16 +8,15 @@ int main() {
 	std::cout << std::setprecision(16);
 	size_t N;
 	std::cin >> N;
-	linalg::Matrix<numbers::Rational> m(N);
+	linalg::Matrix<long double> m(N);
 	
 	for(size_t i = 0; i < N; i++) {
 		for(size_t j = 0; j < N; j++) {
 			int num;
-			std::cin >> num;
-			m[i][j] = numbers::Rational(num);
+			std::cin >> m[i][j];
 		}
 	}
 	
-	std::cout << m.LUDet() << std::endl;
+	std::cout << m.GDet() << std::endl;
 	return 0;
 }

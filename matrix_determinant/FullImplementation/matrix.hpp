@@ -1,12 +1,13 @@
 #include <tuple>
 #include <iostream>
 #include <cstdlib>
+#include <cmath>
 #include <vector>
 
 namespace linalg {
 
 template <typename dType>
-class Matrix {
+class Matrix final {
 public:
 	Matrix() = default;
 		
@@ -20,7 +21,7 @@ public:
 	}
 	
 	Matrix(const std::vector<std::vector<dType>>& data) :
-	_size(data.size())
+		_size(data.size())
 	{
 		_data = (dType**)std::malloc(_size * sizeof(dType*));
 		for (size_t i = 0; i < _size; i++) {
@@ -29,6 +30,13 @@ public:
 				_data[i][j] = data[i][j];
 			}
 		}
+	}
+	
+	Matrix(const Matrix& mt) :
+		_size(mt.size())
+	{
+		_data = AllocSqMem(_size); 
+		mt.CopyDataTo(_data);
 	}
 	
 	
@@ -44,57 +52,92 @@ public:
 		return E;
 	}
 	
-	// Функция копирования данных матрицы в память по указателю
+	// Функция аллоцирования памяти под данные для квадратного массива
+	static dType** AllocSqMem(size_t sz) {
+		dType** res = (dType**)std::malloc(sz * sizeof(dType*));
+		for (size_t i = 0; i < sz; i++) {
+			res[i] = (dType*)std::calloc(sz, sizeof(dType));
+		}
+		return res;
+	}
+	
+	// Функция копирования данных по ссылке
 	dType** CopyDataTo(dType**& dataSt) const {
-		dataSt = (dType**)std::malloc(_size * sizeof(dType*));
 		for (size_t i = 0; i < _size; i++) {
-			dataSt[i] = (dType*)std::calloc(_size, sizeof(dType));
 			for(size_t j = 0; j < _size; j++) {
 				dataSt[i][j] = _data[i][j];
 			}
 		}
-
 		return dataSt;
 	}	
 	
-	// Функция LU-декомпозиции матрицы
-	std::tuple<Matrix, Matrix> LUDecomposition() const {
-		Matrix L = EMatrix(_size);
-		Matrix U(_size);
-		dType** A; 
-		CopyDataTo(A);
+	std::tuple<Matrix, int> GaussTriangleReduction() const {
+		int swapCnt = 1;
+		Matrix C = *this; 
 
-		for(size_t k = 0; k < _size; k++) {
-			U[k][k] = A[k][k];
-			for(size_t i = (k+1); i < _size; i++) { 
-				L[i][k]=A[i][k]/U[k][k];
-				U[k][i]=A[k][i];
-			}
-			for(size_t i = (k+1); i < _size; i++) { 
-				for(size_t j=k+1; j < _size; j++) {
-					A[i][j]=A[i][j]-L[i][k]*U[k][j];
+		for (size_t i = 0; i < _size; i++) { 
+			size_t row = i;
+			for (size_t j = i; j < _size; j++) {
+				if(C[j][i] !=  0) { 
+					row = j;
+					break;
 				}
 			}
+			
+			swap(C[i], C[row], _size);
+			swapCnt = -swapCnt * (i != row ? 1 : - 1);
+			
+			//std::cout << std::endl << "Debug 1: " << C << std::endl;
+					
+			for (size_t j = i+1; j < _size; j++) {
+				if (C[j][i] == 0)
+					continue;
+				dType q = - C[j][i] / C[i][i];
+				for (size_t k = i; k < _size; k++) {
+					C[j][k] += q * C[i][k]; 
+				}
+			}
+			
+			//std::cout << std::endl << "Debug 2: " << C << std::endl;
 		}
-
-		return std::make_tuple(L, U);
+		
+		return std::make_tuple(C, swapCnt);
+		
 	}
 	
-	// Поиск детерминанта матрицы по средства LU-декомпозиции
-	dType LUDet() const {
-		auto[L, U] = LUDecomposition();
+	// Поиск детерминанта матрицы методом Гаусса
+	dType GDet() const {
+		auto[U, cnt] = GaussTriangleReduction();
+		//std::cout << U << std::endl;
 		dType D(1);		
 		for(size_t i = 0; i < _size; i++) {
 			D *= U[i][i];
 		}
-		return D;
+		// Округление до первого знака 
+		return (cnt * round(D*10)/10);
 	}
 	
-	dType* operator [] (size_t i) {
+	dType*& operator [] (size_t i) {
 		if(i > _size) {
 			throw std::invalid_argument("First index is out of range!");
 		}
 		return _data[i];
+	}
+	
+	const dType* operator [] (size_t i) const {
+		if(i > _size) {
+			throw std::invalid_argument("First index is out of range!");
+		}
+		return _data[i];
+	}
+	
+	static void swap(dType*& mass1, dType*& mass2, size_t sz) {
+		dType* tmp = (dType*)std::calloc(sz, sizeof(dType));
+		for(size_t i = 0; i < sz; i++) {
+			tmp[i] = mass1[i];
+			mass1[i] = mass2[i];
+			mass2[i] = tmp[i];
+		}
 	}
 		
 private:
@@ -107,7 +150,6 @@ private:
 template <class dType>
 std::ostream& operator << (std::ostream& os, const Matrix<dType>& matrix) {
 	os << "Matrix {";
-	dType** mt; matrix.CopyDataTo(mt);
 	bool fv = true;
 	for(size_t i = 0; i < matrix.size(); i++) {	
 		if (!fv) {os << " ";}
@@ -116,7 +158,7 @@ std::ostream& operator << (std::ostream& os, const Matrix<dType>& matrix) {
 		for (size_t j = 0; j < matrix.size(); j++) {
 			if (!first) {os << ", ";}
 			first = false;			
-			os << mt[i][j];
+			os << matrix[i][j];
 		}
 		fv = false;
 		os << ")";
@@ -127,20 +169,35 @@ std::ostream& operator << (std::ostream& os, const Matrix<dType>& matrix) {
 
 
 template <typename dType>
-bool operator == (const Matrix<dType>& leftM, const Matrix<dType>& rightM) {
-	dType** lhs; leftM.CopyDataTo(lhs);
-	dType** rhs; rightM.CopyDataTo(rhs);
-	 	
-	if(leftM.size() != rightM.size())
+bool operator == (const Matrix<dType>& lhs, const Matrix<dType>& rhs) {
+	if(lhs.size() != rhs.size())
 		return false;
 	
-	for(size_t i = 0; i < leftM.size(); i++){	
-		for(size_t j = 0; j < leftM.size(); j++) {
+	for(size_t i = 0; i < lhs.size(); i++){	
+		for(size_t j = 0; j < lhs.size(); j++) {
 			if(lhs[i][j] != rhs[i][j]) 
 				return false;
 		}
 	}
+	
 	return true;
 }
+
+template <typename dType>
+Matrix<dType> operator * (const Matrix<dType>& lhs, const Matrix<dType>& rhs) {
+	Matrix<dType> result(lhs.size());
+	
+	for(size_t rowOflhsM = 0; rowOflhsM < lhs.size(); ++rowOflhsM) {
+		for(size_t colOfrhsM = 0; colOfrhsM < rhs.size(); ++colOfrhsM) {
+			dType Rij(0);
+			for (size_t k = 0; k < rhs.size(); k++) {
+				Rij += lhs[rowOflhsM][k] * rhs[k][colOfrhsM];
+			}
+			result[rowOflhsM][colOfrhsM] = Rij;
+		}
+	}
+	
+	return result;
+} 
 
 }
