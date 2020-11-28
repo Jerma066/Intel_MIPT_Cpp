@@ -12,37 +12,50 @@ public:
 	Matrix() = default;
 		
 	Matrix(size_t n) : 
-		_size(n)
+		size_(n)
 	{
-		_data = (dType**)std::malloc(_size * sizeof(dType*));
-		for (size_t i = 0; i < _size; i++) {
-			_data[i] = (dType*)std::calloc(_size, sizeof(dType));
+		data_ = new dType*[size_];
+		for (size_t i = 0; i < size_; i++) {
+			data_[i] = new dType[size_]();
 		}
 	}
 	
 	Matrix(const std::vector<std::vector<dType>>& data) :
-		_size(data.size())
+		size_(data.size())
 	{
-		_data = (dType**)std::malloc(_size * sizeof(dType*));
-		for (size_t i = 0; i < _size; i++) {
-			_data[i] = (dType*)std::calloc(_size, sizeof(dType));
-			for(size_t j = 0; j < _size; j++) {
-				_data[i][j] = data[i][j];
+		data_ = new dType*[size_];
+		for (size_t i = 0; i < size_; i++) {
+			data_[i] = new dType[size_]();
+			for(size_t j = 0; j < size_; j++) {
+				data_[i][j] = data[i][j];
 			}
 		}
 	}
 	
 	Matrix(const Matrix& mt) :
-		_size(mt.size())
+		size_(mt.size())
 	{
-		_data = AllocSqMem(_size); 
-		mt.CopyDataTo(_data);
+		data_ = new dType*[size_];
+		for (size_t i = 0; i < size_; i++) {
+			data_[i] = new dType[size_]();
+			for(size_t j = 0; j < size_; j++) {
+				data_[i][j] = mt.data_[i][j];
+			}
+		}
+	}
+	
+	~Matrix() {
+		for (size_t i = 0; i < size_; i++) {
+			delete[] data_[i];
+		}
+		
+		delete[] data_;
 	}
 	
 	
 public:
-	dType** getData() const { return _data; }
-	size_t size() const { return _size; }
+	dType** getData() const { return data_; }
+	size_t size() const { return size_; }
 	
 	static Matrix EMatrix(size_t n) {
 		Matrix E(n);
@@ -52,48 +65,29 @@ public:
 		return E;
 	}
 	
-	// Функция аллоцирования памяти под данные для квадратного массива
-	static dType** AllocSqMem(size_t sz) {
-		dType** res = (dType**)std::malloc(sz * sizeof(dType*));
-		for (size_t i = 0; i < sz; i++) {
-			res[i] = (dType*)std::calloc(sz, sizeof(dType));
-		}
-		return res;
-	}
-	
-	// Функция копирования данных по ссылке
-	dType** CopyDataTo(dType**& dataSt) const {
-		for (size_t i = 0; i < _size; i++) {
-			for(size_t j = 0; j < _size; j++) {
-				dataSt[i][j] = _data[i][j];
-			}
-		}
-		return dataSt;
-	}	
-	
 	std::tuple<Matrix, int> GaussTriangleReduction() const {
 		int swapCnt = 1;
 		Matrix C = *this; 
 
-		for (size_t i = 0; i < _size; i++) { 
+		for (size_t i = 0; i < size_; i++) { 
 			size_t row = i;
-			for (size_t j = i; j < _size; j++) {
+			for (size_t j = i; j < size_; j++) {
 				if(C[j][i] !=  0) { 
 					row = j;
 					break;
 				}
 			}
 			
-			swap(C[i], C[row], _size);
+			swap(C[i], C[row], size_);
 			swapCnt = -swapCnt * (i != row ? 1 : - 1);
 			
 			//std::cout << std::endl << "Debug 1: " << C << std::endl;
 					
-			for (size_t j = i+1; j < _size; j++) {
+			for (size_t j = i+1; j < size_; j++) {
 				if (C[j][i] == 0)
 					continue;
 				dType q = - C[j][i] / C[i][i];
-				for (size_t k = i; k < _size; k++) {
+				for (size_t k = i; k < size_; k++) {
 					C[j][k] += q * C[i][k]; 
 				}
 			}
@@ -110,7 +104,7 @@ public:
 		auto[U, cnt] = GaussTriangleReduction();
 		//std::cout << U << std::endl;
 		dType D(1);		
-		for(size_t i = 0; i < _size; i++) {
+		for(size_t i = 0; i < size_; i++) {
 			D *= U[i][i];
 		}
 		// Округление до первого знака 
@@ -118,17 +112,17 @@ public:
 	}
 	
 	dType*& operator [] (size_t i) {
-		if(i > _size) {
+		if(i > size_) {
 			throw std::invalid_argument("First index is out of range!");
 		}
-		return _data[i];
+		return data_[i];
 	}
 	
 	const dType* operator [] (size_t i) const {
-		if(i > _size) {
+		if(i > size_) {
 			throw std::invalid_argument("First index is out of range!");
 		}
-		return _data[i];
+		return data_[i];
 	}
 	
 	static void swap(dType*& mass1, dType*& mass2, size_t sz) {
@@ -141,8 +135,8 @@ public:
 	}
 		
 private:
-	dType** _data;
-	size_t _size;
+	dType** data_;
+	size_t size_;
 };
 
 
@@ -199,5 +193,20 @@ Matrix<dType> operator * (const Matrix<dType>& lhs, const Matrix<dType>& rhs) {
 	
 	return result;
 } 
+
+// Default case	
+template <class T>
+struct Helper{              
+    using t = Matrix<T>; 
+};
+
+// Int case
+template <>
+struct Helper<int>{
+    using t = Matrix<double>;
+};
+
+template <class T>
+using qMatrix = typename Helper<T>::t;
 
 }

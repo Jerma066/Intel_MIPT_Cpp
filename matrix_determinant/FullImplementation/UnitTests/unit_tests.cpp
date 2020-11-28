@@ -2,21 +2,21 @@
 #include "../matrix.hpp"
 
 void TestMatrixMultiplicaion() {
-	using namespace linalg;
+	//using namespace linalg;
 	{
-		Matrix<double> A({
+		linalg::qMatrix<double> A({
 			{3, 21, 5}, 
 			{1, 8, 7}, 
 			{9, 47, 54}
 		});
 		
-		Matrix<double> B({
+		linalg::qMatrix<double> B({
 			{1, 2, 1}, 
 			{2, 1, 1}, 
 			{1, -1, 2}
 		});	
 		
-		Matrix<double> res({
+		linalg::qMatrix<double> res({
 			{50, 22, 34}, 
 			{24, 3, 23}, 
 			{157, 11, 164}
@@ -30,7 +30,7 @@ void TestMatrixMultiplicaion() {
 void TestDeterminant() {
 	using namespace linalg;
 	{
-		Matrix<double> A({
+		qMatrix<double> A({
 			{3, 21, 5}, 
 			{1, 8, 7}, 
 			{9, 47, 54}
@@ -40,7 +40,7 @@ void TestDeterminant() {
 	}
 	
 	{
-		Matrix<int> A({
+		qMatrix<int> A({
 			{1, 1}, 
 			{1, 1}, 
 		});
@@ -50,7 +50,7 @@ void TestDeterminant() {
 	}
 	
 	{
-		Matrix<int> A({
+		qMatrix<int> A({
 			{1, 0}, 
 			{0, 1}, 
 		});
@@ -63,7 +63,6 @@ void TestDeterminant() {
 int main() {
 	TestRunner tr;
 
-	//RUN_TEST(tr, TestLUDecomposition);
 	RUN_TEST(tr, TestDeterminant);
 	RUN_TEST(tr, TestMatrixMultiplicaion);
 		
