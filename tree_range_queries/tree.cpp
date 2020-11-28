@@ -5,6 +5,12 @@ namespace trees {
 size_t Standart::getRangeQuerieCount(int first, int second) {
 	size_t surplus = 0; 
 	
+	if(first > second) {
+		auto tmp = second;
+		second = first;
+		first = tmp;
+	}
+	
 	tree_iter fi = tree.lower_bound(first);
 	if(*fi == first) {surplus++;}
 	
