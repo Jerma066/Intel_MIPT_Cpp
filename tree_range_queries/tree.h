@@ -30,6 +30,12 @@ struct Node {
 	{
 	}
 	
+	~Node() {
+		delete left;
+		delete right;
+		//std::cout << "Node with value " << value << " had been deleted ..." << std::endl;
+	}
+	
 	int BalanceFactor() {
 		size_t lh = left ? left->height : -1;
 		size_t rh = right ? right->height : -1;
@@ -48,6 +54,10 @@ public:
 	AVL() : 
 		root_(nullptr) 
 	{
+	}
+	
+	~AVL() {
+		delete root_;
 	}
 	
 public:

@@ -20,9 +20,7 @@ size_t Standart::getRangeQuerieCount(int first, int second) {
 	return (std::distance(fi, ++si) - surplus);
 }
 
-// AVL tree
 void AVL::insertKey(int key) {	
-	//std::cout << key << std::endl;
 	Node* NewNode = new Node(key, nullptr);
 	if(!root_) {
 		root_ = NewNode;
@@ -43,16 +41,13 @@ Node* AVL::_find(int key, Node* curNode) {
 		curNode = root_;
 	
 	if(curNode->value == key) {
-		//std::cout << "No Segmentation Fault 1" << std::endl;
 		return curNode;
 	} 
 	else if(key > curNode->value) {
-		//std::cout << "No Segmentation Fault 2" << std::endl;
 		if(curNode->right)
 			return _find(key, curNode->right);
 	}
 	else if(key < curNode->value) {
-		//std::cout << "No Segmentation Fault 3" << std::endl;
 		if(curNode->left)
 			return _find(key, curNode->left);
 	} 
@@ -182,7 +177,6 @@ void AVL::RebalanceNode(Node* CurNode) {
 			LeftRotate(CurNode);
 		}
 		else {
-			//std::cout << "Hello, bitch!" << std::endl;
 			LeftRotate(CurNode);
 		}
 	} 
@@ -255,17 +249,10 @@ size_t AVL::getRangeQuerieCount(int first, int second) {
 	Node* si = find(second);
 	if(si->value > second) {surplus++;}
 	
-	/*
-	std::cout << "surplus = " << surplus << std::endl;
-	std::cout << "fi->value = " << fi->value << std::endl;
-	std::cout << "si->value = " << si->value << std::endl;
-	*/
-	
 	size_t dist = 1;
 	while (fi != si) {
 		dist++;
 		fi = next(fi);
-		//std::cout << "next = " << fi->value << std::endl;
 	}
 	
 	return (dist - surplus);
