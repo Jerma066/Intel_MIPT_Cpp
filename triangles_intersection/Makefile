@@ -4,7 +4,7 @@ TESTFLAGS = -std=c++1z
 TEST_SOURCES=geo3d.cpp UnitTests/unit_tests.cpp
 
 all:
-	$(CXX) $(CXXFLAGS) -o main $(SOURCES)
+	$(CXX) $(CXXFLAGS) -O2 -o  main $(SOURCES)
 	
 test:
 	$(CXX) $(TESTFLAGS) -o unit_tests $(TEST_SOURCES)
